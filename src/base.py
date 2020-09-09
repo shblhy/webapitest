@@ -1,5 +1,6 @@
 import json
 from ._typing import *
+from .utils import logger
 
 __all__ = (
     'json', 'Enum', 'dataclass', 'Any', 'Optional', 'List', 'Union', 'Dict', 'TypeVar', 'Callable', 'Type', 'cast', 'T', 'EnumT',
@@ -23,6 +24,7 @@ class DataClassMixin:
 class FileLoaderMixin:
     @classmethod
     def load_from_file(cls, path):
+        logger.info('load scene from file %s' % path)
         f = open(path)
         s = f.read()
         f.close()

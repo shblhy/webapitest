@@ -3,7 +3,7 @@ import os
 import requests
 from .base import *
 from .case import Header
-from .utils import read_csv
+from .utils import read_csv, logger
 
 
 @dataclass
@@ -182,8 +182,6 @@ class Scene(DataClassMixin, FileLoaderMixin):
 
     def gen_postman_url(self, case):
         from ..postman import URLClass, QueryParam
-        if self.name == '添加note':
-            print(self.name, self.get_host(), self.get_path())
         return URLClass(
             host=self.get_host(),
             path=self.get_path(),
@@ -239,7 +237,9 @@ class Scene(DataClassMixin, FileLoaderMixin):
             data = case.get_payload()
             for e in self.envs:
                 data = {k: v.replace('{{%s}}' % e.key, e.value) for k, v in data.items()}
-            if self.method in [None, "GET"]:
+            method = 'GET' if self.method in [None, "GET"] else self.method
+            logger.info('执行(%s)请求,URL为%s' % (method, url))
+            if method == 'GET':
                 res[case.name] = requests.get(url, params=data, headers=headers)
             else:
                 res[case.name] = requests.request(self.method or "GET", url, headers=headers, data=data)
@@ -247,26 +247,12 @@ class Scene(DataClassMixin, FileLoaderMixin):
 
     def run(self):
         try:
-            print(self.url)
             responses = self.get_response()
             for case_name, resp in responses.items():
                 try:
-                    print(case_name, resp.status_code, resp.content)
+                    logger.info('run case <%s>, get status %s, content: %s' %
+                                (self.name + case_name, resp.status_code, resp.content))
                 except Exception as e2:
-                    print('case-' + case_name + ' run error:' + str(e2))
+                    logger.error('case-' + case_name + ' run error:' + str(e2))
         except Exception as e1:
-            print('scene-' + self.name + ' run error:' + str(e1))
-
-
-def get_json():
-    f = open('/Users/huangyan/work/tianshang/proj-nwow/skvbackend/tests/cases/hackroute_login2.json')
-    s = f.read()
-    f.close()
-    return json.loads(s)
-
-
-if __name__ == "__main__":
-    j = get_json()
-    obj = Scene.from_dict(j)
-    r = obj.to_dict()
-    print(json.dumps(r, indent=4))
+            logger.error('scene-' + self.name + ' run error:' + str(e1))

@@ -5,6 +5,7 @@ from importlib import import_module
 from .postman import Collection
 from .project import Project
 from .src.case import Information
+from .src.utils import logger
 
 
 def parse_postman_collection_to_casefile(path, casedir):
@@ -90,12 +91,14 @@ def startwebserver():
 
 @click.command()
 def initdb():
+    logger.info("initdb")
     get_project().init_db()
 
 
 @click.command(help='执行用例')
 @click.argument('path')
 def runcase(path):
+    logger.info("runcase " + path)
     p = get_project_cls().gen(path=path)
     p.load_cookie()
     p.run()
@@ -104,40 +107,39 @@ def runcase(path):
 @click.command()
 @click.argument('casedir')
 def createcsv(casedir):
+    logger.info("createcsv " + casedir)
     current_dir = os.getcwd()
     if not casedir.startswith('/'):
         casedir = os.path.join(current_dir, casedir)
     p = get_project_cls().gen(path=casedir)
     p.create_scv()
-    print("createcsv")
 
 
 @click.command()
 @click.argument('casedir')
 def checkcsv(casedir):
+    logger.info("checkcsv " + casedir)
     current_dir = os.getcwd()
     if not casedir.startswith('/'):
         casedir = os.path.join(current_dir, casedir)
     p = get_project_cls().gen(path=casedir)
     p.check_csv()
-    print("createcsv")
 
 
 @click.command()
 @click.argument('casedir')
 def resetjsonbycsv(casedir):
+    logger.info('resetjsonbycsv ' + casedir)
     current_dir = os.getcwd()
     if not casedir.startswith('/'):
         casedir = os.path.join(current_dir, casedir)
     p = get_project_cls().gen(path=casedir)
     p.reset_json_by_csv()
-    print("createcsv")
-    print("resetjsonbycsv")
 
 
 @click.command()
 def run():
-    print("run")
+    logger.info('run')
 
 
 functions = [

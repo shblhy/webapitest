@@ -2,7 +2,7 @@ import os
 import re
 from builtins import NotImplementedError
 from .src.scene import Scene, EnvironParam
-from .src.utils import write_csv
+from .src.utils import write_csv, logger
 
 
 class Project:
@@ -33,17 +33,13 @@ class Project:
         if not self.cookie_file_path.startswith('/'):
             current_dir = os.getcwd()
             cookie_file_path = os.path.join(current_dir, self.cookie_file_path)
+
         scene = Scene.load_from_file(cookie_file_path)
-        print(scene.name)
         scene.set_project(self)
         response_dict = scene.get_response()
         pattern = re.compile('^' + self.cookie_key + '=(.*?);.*$')
         for user, resp in response_dict.items():
-            print(user)
-            print(resp.headers)
-            print(resp.content)
             set_cookie_line = resp.headers._store['set-cookie'][1]
-            print(set_cookie_line)
             self.cookie_users[user] = pattern.match(set_cookie_line).groups()[0]  # 没记录过期时间
 
     def callback(self, path, structure):
@@ -55,7 +51,6 @@ class Project:
         scene = Scene.load_from_file(path)
         scene.set_project(self)
         self.scenes.append(scene)
-        print(scene.url)
         if scene.name not in structure:
             structure[scene.name] = scene
         scene.run()
@@ -78,10 +73,10 @@ class Project:
                 elif os.path.isdir(path):
                     if item not in current_data:
                         current_data[item] = {}
-                    print('scan dir', path)
+                    logger.info('scan dir ' + path)
                     search(path, target, callback=callback, current_data=current_data[item])
                 elif path.split('/')[-1].split('.')[-1] == target:
-                    print('load file', path)
+                    logger.info('load file ' + path)
                     callback(self, path, current_data)
 
         search(self.path, target, callback=callback, current_data=self.scene_structure)
@@ -122,7 +117,6 @@ class Project:
         scene = Scene.load_from_file(path)
         scene.set_project(self)
         self.scenes.append(scene)
-        print(scene.url)
         if scene.name not in structure:
             structure[scene.name] = scene
 
@@ -137,7 +131,6 @@ class Project:
         scene = Scene.load_from_csv(path)
         scene.set_project(self)
         self.scenes.append(scene)
-        print(scene.url)
         if scene.name not in structure:
             structure[scene.name] = scene
 

@@ -1,5 +1,8 @@
 import csv
 import codecs
+import logging
+
+logger = logging.getLogger('webapitest')
 
 
 def write_csv(csv_path, data):
