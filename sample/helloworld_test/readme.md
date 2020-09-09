@@ -1,1 +1,2 @@
-这是基于webapitest做的一个测试项目
+这是基于webapitest做的一个测试项目。
+使用git管理用例时，建议拷贝此.gitignore文件。本地无需上传到git的文件都以local_xx命名。

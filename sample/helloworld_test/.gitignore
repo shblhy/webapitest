@@ -1,0 +1,15 @@
+*.pyc
+.idea
+.venv*
+.env*
+*.egg-info
+build/
+dist/
+.python-version
+*.jl
+.DS_Store
+mongodb
+target
+.coverage*
+_trial_temp/
+local_*

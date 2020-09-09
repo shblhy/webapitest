@@ -7,7 +7,7 @@ formatter_msg = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter_msg)
 logger.addHandler(console_handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)  # 建议在这里写INFO,local_settings里写debug
 
 
 current_project = 'MyProject'
