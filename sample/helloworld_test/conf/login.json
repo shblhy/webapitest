@@ -1,0 +1,20 @@
+{
+    "name": "login",
+    "url": "http://{{host}}/login",
+    "method": "POST",
+    "cases": [
+        {
+            "name": "用户1",
+            "params": {
+                "username": "user1",
+                "passwoord": "123456"
+            }
+        }, {
+            "name": "用户2",
+            "params": {
+                "username": "user2",
+                "passwoord": "123456"
+            }
+        }
+    ]
+}

@@ -29,6 +29,10 @@ class Project:
         ) for k, v in self.env.items()]
 
     def load_cookie(self):
+        """
+            使用flask-login的cookie设置与解析，如网站使用其它方式设置cookie，可重写此方法。
+        :return:
+        """
         cookie_file_path = self.cookie_file_path
         if not self.cookie_file_path.startswith('/'):
             current_dir = os.getcwd()
@@ -39,8 +43,12 @@ class Project:
         response_dict = scene.get_response()
         pattern = re.compile('^' + self.cookie_key + '=(.*?);.*$')
         for user, resp in response_dict.items():
-            set_cookie_line = resp.headers._store['set-cookie'][1]
-            self.cookie_users[user] = pattern.match(set_cookie_line).groups()[0]  # 没记录过期时间
+            try:
+                set_cookie_line = resp.headers._store['set-cookie'][1]
+                self.cookie_users[user] = pattern.match(set_cookie_line).groups()[0]  # 没记录过期时间
+                logger.info('成功登陆用户 %s，后续场景中可切换此用户。' % user)
+            except Exception as e:
+                logger.info('登陆用户 %s 失败，后续场景使用此用户等同于未登录。' % user)
 
     def callback(self, path, structure):
         """
