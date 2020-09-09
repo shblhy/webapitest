@@ -42,15 +42,15 @@ class Scene(DataClassMixin, FileLoaderMixin):
         return self._user_cookie
 
     def _get_host_port(self):
-        url = self.url
-        for s in ['http://', 'https://']:
-            if url.startswith(s):
-                url = url[len(s):]
-                break
-        return url.split('/')[0]
-        # todo@hy 优雅写法应该是正则，只是一下子搞不定非贪婪模式
-        # pattern = re.compile('[http|https]*://(.*)/.*$')
-        # return pattern.match(self.url).groups()[0]
+        # url = self.url
+        # for s in ['http://', 'https://']:
+        #     if url.startswith(s):
+        #         url = url[len(s):]
+        #         break
+        # return url.split('/')[0]
+
+        pattern = re.compile('[http|https]*://(.*?)/.*$')
+        return pattern.match(self.url).groups()[0]
 
     def get_host(self):
         return self._get_host_port().split(':')[0]
@@ -61,16 +61,16 @@ class Scene(DataClassMixin, FileLoaderMixin):
         return None
 
     def get_path(self):
-        url = self.url
-        for s in ['http://', 'https://']:
-            if url.startswith(s):
-                url = url[len(s):]
-                break
-        path = '/'.join(url.split('/')[1:])
-        return path.split('?')[0]
-        # todo@hy 优雅写法应该是正则，只是一下子搞不定非贪婪模式
-        # pattern = re.compile('[http|https]*://.*/(.*)\[?]*.*$')
-        # return pattern.match(self.url).groups()[0]
+        # url = self.url
+        # for s in ['http://', 'https://']:
+        #     if url.startswith(s):
+        #         url = url[len(s):]
+        #         break
+        # path = '/'.join(url.split('/')[1:])
+        # return path.split('?')[0]
+
+        pattern = re.compile('[http|https]*://.*/(.*?)?.*$')
+        return pattern.match(self.url).groups()[0]
 
     def set_user_cookie(self, user_cookie):
         self._user_cookie = user_cookie # "session=xxx"

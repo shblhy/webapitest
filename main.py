@@ -94,8 +94,7 @@ def initdb():
 
 
 @click.command(help='执行用例')
-@click.argument('path')# help='系统绝对路径，或从当前位置开始的相对路径'
-# @click.option('--path', prompt='提供你将执行的用例路径', help='系统绝对路径，或从当前位置开始的相对路径')
+@click.argument('path')
 def runcase(path):
     p = get_project_cls().gen(path=path)
     p.load_cookie()

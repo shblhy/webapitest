@@ -29,12 +29,21 @@ class Project:
         ) for k, v in self.env.items()]
 
     def load_cookie(self):
-        scene = Scene.load_from_file(self.cookie_file_path)
+        cookie_file_path = self.cookie_file_path
+        if not self.cookie_file_path.startswith('/'):
+            current_dir = os.getcwd()
+            cookie_file_path = os.path.join(current_dir, self.cookie_file_path)
+        scene = Scene.load_from_file(cookie_file_path)
+        print(scene.name)
         scene.set_project(self)
         response_dict = scene.get_response()
-        pattern = re.compile('^' + self.cookie_key + '=([a-zA-Z0-9._-]*);.*$')
+        pattern = re.compile('^' + self.cookie_key + '=(.*?);.*$')
         for user, resp in response_dict.items():
+            print(user)
+            print(resp.headers)
+            print(resp.content)
             set_cookie_line = resp.headers._store['set-cookie'][1]
+            print(set_cookie_line)
             self.cookie_users[user] = pattern.match(set_cookie_line).groups()[0]  # 没记录过期时间
 
     def callback(self, path, structure):
