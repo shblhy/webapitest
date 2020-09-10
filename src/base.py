@@ -28,7 +28,14 @@ class FileLoaderMixin:
         f = open(path)
         s = f.read()
         f.close()
-        return cls.from_dict(json.loads(s))
+        try:
+            return cls.from_dict(json.loads(s))
+        except Exception as e:
+
+            logger.info(
+                "load_file error: %s, message: %s" % (path, str(e))
+            )
+            raise e
 
 
 @dataclass

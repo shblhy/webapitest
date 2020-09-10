@@ -16,7 +16,7 @@ def parse_postman_collection_to_casefile(path, casedir):
 def parse_casefile_to_postman_collection(path, to_file_path):
     name = path.split('/')[-1][0]
     project = Project(path=path)
-    project.run()
+    project.load_scene()
     c = Collection(
         info=Information(
             description='auto parsed from webapitest. https://gitee.com/wow_1/webapitest',
@@ -94,47 +94,46 @@ def initdb():
     logger.info("initdb")
     get_project().init_db()
 
+def get_project(path):
+    project_cls = get_project_cls()
+    if path == 'default':
+        p = project_cls.gen()
+    else:
+        if not path.startswith('/'):
+            current_dir = os.getcwd()
+            casedir = os.path.join(current_dir, path)
+        p = get_project_cls().gen(path=casedir)
+    return p
+
 
 @click.command(help='执行用例')
-@click.argument('path')
+@click.argument('path', default='default')
 def runcase(path):
     logger.info("runcase " + path)
-    p = get_project_cls().gen(path=path)
+    p = get_project(path)
     p.load_cookie()
     p.run()
 
 
 @click.command()
-@click.argument('casedir')
+@click.argument('casedir', default='default')
 def createcsv(casedir):
     logger.info("createcsv " + casedir)
-    current_dir = os.getcwd()
-    if not casedir.startswith('/'):
-        casedir = os.path.join(current_dir, casedir)
-    p = get_project_cls().gen(path=casedir)
-    p.create_scv()
+    get_project(casedir).create_scv()
 
 
 @click.command()
-@click.argument('casedir')
+@click.argument('casedir', default='default')
 def checkcsv(casedir):
     logger.info("checkcsv " + casedir)
-    current_dir = os.getcwd()
-    if not casedir.startswith('/'):
-        casedir = os.path.join(current_dir, casedir)
-    p = get_project_cls().gen(path=casedir)
-    p.check_csv()
+    get_project(casedir).check_csv()
 
 
 @click.command()
-@click.argument('casedir')
+@click.argument('casedir', default='default')
 def resetjsonbycsv(casedir):
     logger.info('resetjsonbycsv ' + casedir)
-    current_dir = os.getcwd()
-    if not casedir.startswith('/'):
-        casedir = os.path.join(current_dir, casedir)
-    p = get_project_cls().gen(path=casedir)
-    p.reset_json_by_csv()
+    get_project(casedir).reset_json_by_csv()
 
 
 @click.command()
